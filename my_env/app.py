@@ -28,7 +28,37 @@ try:
 except Exception as e:
     logger.error(f"Error creating dictionary: {e}")
     tokenizer_obj = None
+import sqlite3
 
+@app.route('/define', methods=['GET'])
+def get_definitions():
+    word = request.args.get('word')
+    if not word:
+        return jsonify({"error": "No word provided"}), 400
+    
+    try:
+        # Assuming the database is in the same directory
+        conn = sqlite3.connect('jmdict.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+        SELECT kanji, reading, meanings FROM entries
+        WHERE kanji = ? OR reading = ?
+        """, (word, word))
+        results = cursor.fetchall()
+        
+        conn.close()
+        
+        definitions = [
+            {"kanji": r[0], "reading": r[1], "meanings": r[2]} 
+            for r in results
+        ]
+        
+        return jsonify(definitions)
+    
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return jsonify({"error": str(e)}), 500
 @app.route("/tokenize", methods=["POST"])
 def tokenize_text():
     # Ensure request is JSON
