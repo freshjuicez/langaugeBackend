@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "JMdict",
+			"path": "../../langauge/JMdict"
+		},
+		{
+			"name": "langaugeBackend",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
